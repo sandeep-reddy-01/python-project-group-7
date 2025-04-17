@@ -15,15 +15,15 @@ app = Flask(__name__)
 # Load the data globally for easy access (CSV Data)
 df = load_data()
 
+#Helper function to get the correct path to the database
+def get_db_connection():
+    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_collection', 'elections.db'))
+    return sqlite3.connect(db_path)
+
 # Home page with links
 @app.route("/")
 def index():
     return render_template('index.html')
-
-# Search Data
-import sqlite3
-from flask import request, render_template
-
 
 # Search Route
 @app.route("/search", methods=["GET", "POST"])
@@ -32,12 +32,9 @@ def search_data():
     if request.method == "POST":
         query = request.form['query'].lower()
 
-        # Path to your SQLite database
-        db_path = os.path.join("database", "elections.db")
-        conn = sqlite3.connect(db_path)
+        conn = get_db_connection()
         cursor = conn.cursor()
 
-        # Build a WHERE clause that searches across key text columns
         sql_query = """
             SELECT * FROM election_data
             WHERE 
@@ -49,13 +46,11 @@ def search_data():
                 LOWER(CounterGroup) LIKE ? OR
                 LOWER(CounterType) LIKE ?
         """
-
         params = tuple(['%' + query + '%'] * 7)
 
         cursor.execute(sql_query, params)
         columns = [desc[0] for desc in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
-
         conn.close()
 
     return render_template("search.html", results=results)
@@ -63,13 +58,12 @@ def search_data():
 # View Data page (Fetch data from SQLite)
 @app.route("/data")
 def view_data():
-    conn = sqlite3.connect("database/elections.db")
+    conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM election_data")
     data = cursor.fetchall()
     conn.close()
 
-    # Convert data into a dictionary-like structure for rendering in the template
     columns = ['Precinct', 'Race', 'LegislativeDistrict', 'CountyCouncil', 
                'CongressionalDistrict', 'CounterGroup', 'CounterType', 'SumOfCount']
     data_dict = [dict(zip(columns, row)) for row in data]
@@ -80,7 +74,6 @@ def view_data():
 @app.route("/insert_data", methods=["GET", "POST"])
 def insert_data():
     if request.method == "POST":
-        # Get the data from the form
         precinct = request.form["precinct"]
         race = request.form["race"]
         legislative_district = request.form["legislative_district"]
@@ -89,19 +82,15 @@ def insert_data():
         counter_group = request.form["counter_group"]
         counter_type = request.form["counter_type"]
         
-        # Ensure that sum_of_count is an integer
         try:
             sum_of_count = int(request.form["sum_of_count"])
         except ValueError:
-            # Handle invalid sum_of_count (non-integer input)
             return "Invalid Sum of Count value. Please enter a valid number.", 400
 
-        # Insert data into the SQLite database
-        conn = sqlite3.connect("database/elections.db")
+        conn = get_db_connection()
         cursor = conn.cursor()
 
         try:
-            # SQL query to insert the data into the table
             cursor.execute('''INSERT INTO election_data (
                 Precinct, Race, LegislativeDistrict, CountyCouncil,
                 CongressionalDistrict, CounterGroup, CounterType, SumOfCount
@@ -109,16 +98,14 @@ def insert_data():
             (precinct, race, legislative_district, county_council,
              congressional_district, counter_group, counter_type, sum_of_count))
 
-            # Commit and close the connection
             conn.commit()
         except sqlite3.Error as e:
-            # Handle any errors that occur during the database operation
             conn.rollback()
             return f"Database error: {e}", 500
         finally:
             conn.close()
 
-        return redirect(url_for('view_data'))  # Redirect to the view data page
+        return redirect(url_for('view_data'))
 
     return render_template('insert_data.html')
 
