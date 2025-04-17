@@ -12,13 +12,12 @@ from collect_data import load_data
 
 app = Flask(__name__)
 
+# Base directory for DB path
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "..", "database", "elections.db")
+
 # Load the data globally for easy access (CSV Data)
 df = load_data()
-
-#Helper function to get the correct path to the database
-def get_db_connection():
-    db_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data_collection', 'elections.db'))
-    return sqlite3.connect(db_path)
 
 # Home page with links
 @app.route("/")
@@ -32,9 +31,10 @@ def search_data():
     if request.method == "POST":
         query = request.form['query'].lower()
 
-        conn = get_db_connection()
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
+        # Build a WHERE clause that searches across key text columns
         sql_query = """
             SELECT * FROM election_data
             WHERE 
@@ -46,11 +46,13 @@ def search_data():
                 LOWER(CounterGroup) LIKE ? OR
                 LOWER(CounterType) LIKE ?
         """
+
         params = tuple(['%' + query + '%'] * 7)
 
         cursor.execute(sql_query, params)
         columns = [desc[0] for desc in cursor.description]
         results = [dict(zip(columns, row)) for row in cursor.fetchall()]
+
         conn.close()
 
     return render_template("search.html", results=results)
@@ -58,12 +60,13 @@ def search_data():
 # View Data page (Fetch data from SQLite)
 @app.route("/data")
 def view_data():
-    conn = get_db_connection()
+    conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("SELECT * FROM election_data")
     data = cursor.fetchall()
     conn.close()
 
+    # Convert data into a dictionary-like structure for rendering in the template
     columns = ['Precinct', 'Race', 'LegislativeDistrict', 'CountyCouncil', 
                'CongressionalDistrict', 'CounterGroup', 'CounterType', 'SumOfCount']
     data_dict = [dict(zip(columns, row)) for row in data]
@@ -74,6 +77,7 @@ def view_data():
 @app.route("/insert_data", methods=["GET", "POST"])
 def insert_data():
     if request.method == "POST":
+        # Get the data from the form
         precinct = request.form["precinct"]
         race = request.form["race"]
         legislative_district = request.form["legislative_district"]
@@ -82,12 +86,14 @@ def insert_data():
         counter_group = request.form["counter_group"]
         counter_type = request.form["counter_type"]
         
+        # Ensure that sum_of_count is an integer
         try:
             sum_of_count = int(request.form["sum_of_count"])
         except ValueError:
             return "Invalid Sum of Count value. Please enter a valid number.", 400
 
-        conn = get_db_connection()
+        # Insert data into the SQLite database
+        conn = sqlite3.connect(DB_PATH)
         cursor = conn.cursor()
 
         try:
