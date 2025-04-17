@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Insert Election Data</title>
+    <style>
+        /* Embedded CSS for the page */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+
+        main {
+            margin-top: 30px;
+            text-align: left;
+            line-height: 1.6;
+        }
+
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        h3 {
+            color: #4f46e5;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-container label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+        }
+
+        .form-container input, .form-container select {
+            padding: 10px;
+            width: 100%;
+            font-size: 16px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        .form-container button {
+            padding: 10px 15px;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .form-container button:hover {
+            background-color: #3b35c5;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Insert Election Data</h1>
+</header>
+
+<main>
+    <div class="form-container">
+        <form method="POST">
+            <label for="precinct">Precinct</label>
+            <input type="text" id="precinct" name="precinct" required>
+
+            <label for="race">Race</label>
+            <input type="text" id="race" name="race" required>
+
+            <label for="legislative_district">Legislative District</label>
+            <input type="text" id="legislative_district" name="legislative_district" required>
+
+            <label for="county_council">County Council</label>
+            <input type="text" id="county_council" name="county_council" required>
+
+            <label for="congressional_district">Congressional District</label>
+            <input type="text" id="congressional_district" name="congressional_district" required>
+
+            <label for="counter_group">Counter Group</label>
+            <input type="text" id="counter_group" name="counter_group" required>
+
+            <label for="counter_type">Counter Type</label>
+            <input type="text" id="counter_type" name="counter_type" required>
+
+            <label for="sum_of_count">Sum Of Count</label>
+            <input type="number" id="sum_of_count" name="sum_of_count" required>
+
+            <button type="submit">Insert Data</button>
+        </form>
+    </div>
+</main>
+
+<footer>
+    <p><a href="/">Back to Home</a></p>
+</footer>
+
+</body>
+</html>

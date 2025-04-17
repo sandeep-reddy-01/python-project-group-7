@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>View Election Data</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9fafb;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+        header {
+            background-color: #4f46e5;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 8px;
+        }
+        table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        th {
+            background-color: #4f46e5;
+            color: white;
+        }
+        a {
+            color: #4f46e5;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Election Data - View Data</h1>
+</header>
+
+<main>
+    <h2>Data Table</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Precinct</th>
+                <th>Race</th>
+                <th>LegislativeDistrict</th>
+                <th>CountyCouncil</th>
+                <th>CongressionalDistrict</th>
+                <th>CounterGroup</th>
+                <th>CounterType</th>
+                <th>SumOfCount</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row.Precinct }}</td>
+                <td>{{ row.Race }}</td>
+                <td>{{ row.LegislativeDistrict }}</td>
+                <td>{{ row.CountyCouncil }}</td>
+                <td>{{ row.CongressionalDistrict }}</td>
+                <td>{{ row.CounterGroup }}</td>
+                <td>{{ row.CounterType }}</td>
+                <td>{{ row.SumOfCount }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <p><a href="/">Back to Home</a></p>
+</main>
+
+</body>
+</html>
